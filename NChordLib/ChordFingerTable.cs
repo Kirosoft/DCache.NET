@@ -50,6 +50,9 @@ namespace NChordLib
         /// <param name="nodeIn">The node to populate the finger table with</param>
         public ChordFingerTable(ChordNode seed)
         {
+            StartValues = new UInt64[64];
+            Successors = new ChordNode[64];
+
             // populate the start array and successors
             for (int i = 0; i < this.Length; i++)
             {

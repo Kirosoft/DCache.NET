@@ -46,61 +46,43 @@ namespace NChordLib
         /// <summary>
         /// The host name that identifies this ChordInstance.
         /// </summary>
-        public string Host
-        {
-            get 
-            { 
-                return ChordServer.LocalNode.Host;
-            }
-        }
+        public string Host => ChordServer.LocalNode.Host;
 
         /// <summary>
         /// The port on which this ChordInstance is listening.
         /// </summary>
-        public int Port
-        {
-            get 
-            { 
-                return ChordServer.LocalNode.PortNumber;
-            }
-        }
+        public int Port => ChordServer.LocalNode.PortNumber;
 
         /// <summary>
         /// The ID is the hash value that corresponds to the current ChordInstance, and is used, amongst
         /// other things, to determine the correct position in a Chord ring for the ChordInstance and its
         /// neighbors.
         /// </summary>
-        public UInt64 ID
-        {
-            get 
-            { 
-                return ChordServer.LocalNode.ID;
-            }
-        }
+        public UInt64 ID => ChordServer.LocalNode.ID;
 
         /// <summary>
         /// The Successor is the ChordNode that follows the current ChordInstance in the Chord ring.
         /// Since the Successor is also the first item in the SuccessorCache, we simply get/set out of the
         /// first item stored in the SuccessorCache.
         /// </summary>
-        public ChordNode Successor
+        public ChordNode Successor 
         {
             get 
             { 
-                return this.m_SuccessorCache[0]; 
+                return this.SuccessorCache[0]; 
             }
             set
             {
-                if (value == null && value != this.m_SuccessorCache[0])
+                if (value == null && value != this.SuccessorCache[0])
                 {
                     ChordServer.Log(LogLevel.Info, "Navigation", "Setting successor to null.");
                 }
                 else if (value != null && 
-                    (this.m_SuccessorCache[0] == null || this.m_SuccessorCache[0].ID != value.ID))
+                    (this.SuccessorCache[0] == null || this.SuccessorCache[0].ID != value.ID))
                 {
                     ChordServer.Log(LogLevel.Info, "Navigation", "New Successor {0}.", value);
                 }
-                this.m_SuccessorCache[0] = value;
+                this.SuccessorCache[0] = value;
             }
         }
 
@@ -129,40 +111,18 @@ namespace NChordLib
             }
         }
 
-        private ChordNode[] m_SuccessorCache;
         /// <summary>
         /// The SuccessorCache is used to keep the N (N == SuccessorCache.Length) closest successors
         /// to this ChordInstance handy.  Different values for the size of the SuccessorCache length
         /// can impact performance under churn and in varying (often, smaller) sized Chord rings.
         /// </summary>
-        public ChordNode[] SuccessorCache
-        {
-            get 
-            { 
-                return this.m_SuccessorCache; 
-            }
-            set
-            {
-                this.m_SuccessorCache = value;
-            }
-        }
+        public ChordNode[] SuccessorCache { get; set;  }
 
-        private ChordFingerTable m_FingerTable;
         /// <summary>
         /// The FingerTable contains reasonably up-to-date successor ChordNode owners for exponentially
         /// distant ID values.  The FingerTable is maintained in the background by the maintenance
         /// processes and is used in navigation as a shortcut when possible.
         /// </summary>
-        public ChordFingerTable FingerTable
-        {
-            get 
-            { 
-                return this.m_FingerTable; 
-            }
-            set 
-            { 
-                this.m_FingerTable = value; 
-            }
-        }
+        public ChordFingerTable FingerTable { get; set;  }
     }
 }

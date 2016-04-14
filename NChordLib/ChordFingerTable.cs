@@ -58,49 +58,21 @@ namespace NChordLib
             }
         }
 
-        private UInt64[] m_StartValues = new UInt64[64];  // the array of start values (n+2^i % m)
         /// <summary>
         /// The StartValues for each finger in the finger table.  Each StartValue is a sequential
         /// power of two (wrapped around the Chord ring) further from its previous finger.
         /// </summary>
-        public UInt64[] StartValues
-        {
-            get 
-            { 
-                return m_StartValues; 
-            }
-            set 
-            { 
-                m_StartValues = value; 
-            }
-        }
+        public UInt64[] StartValues { get; set; }
 
-        private ChordNode[] m_Successors = new ChordNode[64]; // the array of successors that correspond to each start value
         /// <summary>
         /// The parallel Successor array, where each Successor represents a cached version of FindSuccessor() on
         /// the corresponding StartValue from the StartValues array.
         /// </summary>
-        public ChordNode[] Successors
-        {
-            get 
-            { 
-                return m_Successors; 
-            }
-            set 
-            { 
-                m_Successors = value; 
-            }
-        }
+        public ChordNode[] Successors { get; set; }
 
         /// <summary>
         /// the length of the fingerTable (equal to M or the number of bits in the hash key)
         /// </summary>
-        public int Length
-        {
-            get
-            {
-                return m_StartValues.Length;
-            }
-        }
+        public int Length => StartValues.Length;
     }
 }

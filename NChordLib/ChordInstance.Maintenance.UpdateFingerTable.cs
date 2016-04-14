@@ -58,7 +58,7 @@ namespace NChordLib
                 {
                     // update the fingers moving outwards - once the last finger
                     // has been reached, start again closest to LocalNode (0).
-                    if (this.m_NextFingerToUpdate >= this.m_FingerTable.Length)
+                    if (this.m_NextFingerToUpdate >= this.FingerTable.Length)
                     {
                         this.m_NextFingerToUpdate = 0;
                     }

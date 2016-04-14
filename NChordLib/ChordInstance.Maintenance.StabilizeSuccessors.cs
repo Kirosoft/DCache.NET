@@ -69,7 +69,7 @@ namespace NChordLib
                     else
                     {
                         bool successorCacheHelped = false;
-                        foreach (ChordNode entry in this.m_SuccessorCache)
+                        foreach (ChordNode entry in this.SuccessorCache)
                         {
                             ChordInstance instance = ChordServer.GetInstance(entry);
                             if (ChordServer.IsInstanceValid(instance))

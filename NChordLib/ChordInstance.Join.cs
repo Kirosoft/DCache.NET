@@ -58,9 +58,7 @@ namespace NChordLib
             // establish successor cache initially with all entries pointing loally
             this.SuccessorCache = new ChordNode[3]; // TODO: make this configurable
             for (int i = 0; i < this.SuccessorCache.Length; i++)
-            {
                 this.SuccessorCache[i] = ChordServer.LocalNode;
-            }
 
             if (seed != null)   // join an existing chord ring
             {

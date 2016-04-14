@@ -65,10 +65,9 @@ namespace NChordLib
                 this.Successor = ChordServer.LocalNode;
                 this.Predecessor = ChordServer.LocalNode;
                 this.FingerTable = new ChordFingerTable(ChordServer.LocalNode);
+            
                 for (int i = 0; i < this.SuccessorCache.Length; i++)
-                {
                     this.SuccessorCache[i] = ChordServer.LocalNode;
-                }
             }
         }
     }

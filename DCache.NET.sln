@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NChordLib", "NChordLib\NChordLib.csproj", "{EFE450D1-4007-41E4-99FD-EC47B062A4BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DCacheServer", "NChordServer\DCacheServer.csproj", "{8F2303A7-448C-4F4B-BF2C-4393270CDA44}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DCacheServer", "DCacheServer\DCacheServer.csproj", "{8F2303A7-448C-4F4B-BF2C-4393270CDA44}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FF3E4610-D7CC-4263-8A44-838FEDA046FB}"
 	ProjectSection(SolutionItems) = preProject

@@ -9,76 +9,25 @@
  *      * Logging to a common logging facility (used by client and server code alike).
  *      * Common remoting service registration / un-regstration.
  *
- * ****************************************************************************
- *  Copyright (c) 2008 Andrew Cencini
- *
- *  Permission is hereby granted, free of charge, to any person obtaining
- *  a copy of this software and associated documentation files (the
- *  "Software"), to deal in the Software without restriction, including
- *  without limitation the rights to use, copy, modify, merge, publish,
- *  distribute, sublicense, and/or sell copies of the Software, and to
- *  permit persons to whom the Software is furnished to do so, subject to
- *  the following conditions:
- *
- *  The above copyright notice and this permission notice shall be
- *  included in all copies or substantial portions of the Software.
- *
- *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- *  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- *  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- *  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- *  LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- *  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * ****************************************************************************
  */
 
 using System;
-using System.Collections;
-using System.Runtime.Remoting;
-using System.Runtime.Remoting.Channels;
-using System.Runtime.Remoting.Channels.Tcp;
 using System.Configuration;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace DCacheLib
 {
     /// <summary>
     /// Static methods and properties for various Chord functionality.
     /// </summary>
-    public static partial class ChordServer
+    public static class Server
     {
         /// <summary>
         /// The local ChordNode identification.  Used in logging (to log to the correct log file) and navigation.
         /// </summary>
-        public static ChordNode LocalNode { get; set; }
+        public static Node LocalNode { get; set; }
         public static int MaxRetries => Convert.ToInt32(ConfigurationManager.AppSettings["Retries"]);
-
-        /// <summary>
-        /// Get a (local or remote) ChordInstance given a ChordNode.
-        /// </summary>
-        /// <param name="node">The ChordNode specifying the node to get an instance of.</param>
-        /// <returns>A ChordInstance from the specified node, or null if an error is encountered.</returns>
-        public static ChordInstance GetInstance(ChordNode node)
-        {
-            if (node == null)
-            {
-                ChordServer.Log(LogLevel.Error, "Navigation", "Invalid Node ({0}).", "Null Argument.");
-                return null;
-            }
-
-            try
-            {
-                ChordInstance retInstance = (ChordInstance)Activator.GetObject(typeof(ChordInstance), string.Format("tcp://{0}:{1}/chord", node.Host, node.PortNumber));
-                return retInstance;
-            }
-            catch (Exception e)
-            {
-                // perhaps instead we should just pass on the error?
-                ChordServer.Log(LogLevel.Error, "Navigation", "Unable to activate remote server {0}:{1} ({2}).", node.Host, node.PortNumber, e.Message);
-                return null;
-            }
-        }
 
         #region Safe Remote Method / Property Access
 
@@ -117,7 +66,7 @@ namespace DCacheLib
         /// <param name="remoteNode">The remote on which to call the method.</param>
         /// <param name="callingNode">The node to inform the remoteNode of.</param>
         /// <returns>True if succeeded, FALSE otherwise.</returns>
-        public static bool CallNotify(ChordNode remoteNode, ChordNode callingNode)
+        public static bool CallNotify(Node remoteNode, Node callingNode)
         {
             return CallNotify(remoteNode, callingNode, MaxRetries);
         }
@@ -129,18 +78,16 @@ namespace DCacheLib
         /// <param name="callingNode">The node to inform the remoteNode of.</param>
         /// <param name="retryCount">The number of times to retry the operation in case of error.</param>
         /// <returns>True if succeeded, FALSE otherwise.</returns>
-        public static bool CallNotify(ChordNode remoteNode, ChordNode callingNode, int retryCount)
+        public static bool CallNotify(Node remoteNode, Node callingNode, int retryCount)
         {
-            ChordInstance instance = ChordServer.GetInstance(remoteNode);
-
             try
             {
-                instance.Notify(callingNode);
+                remoteNode.Notify(callingNode);
                 return true;
             }
             catch (Exception ex)
             {
-                ChordServer.Log(LogLevel.Debug, "Remote Invoker", "CallNotify error: {0}", ex.Message);
+                //Server.Log(LogLevel.Debug, "Remote Invoker", "CallNotify error: {0}", ex.Message);
 
                 if (retryCount > 0)
                 {
@@ -159,7 +106,7 @@ namespace DCacheLib
         /// <param name="remoteNode">The remote on which to call the method.</param>
         /// <param name="id">The ID to look up.</param>
         /// <returns>The Successor of ID, or NULL in case of error.</returns>
-        public static ChordNode CallFindSuccessor(ChordNode remoteNode, UInt64 id)
+        public static Node CallFindSuccessor(Node remoteNode, UInt64 id)
         {
             int hopCountOut = 0;
             return CallFindSuccessor(remoteNode, id, MaxRetries, 0, out hopCountOut);
@@ -171,9 +118,9 @@ namespace DCacheLib
         /// </summary>
         /// <param name="id"> The ID to look up (ChordServer.LocalNode is used as the remoteNode).</param>
         /// <returns>The Successor of ID, or NULL in case of error.</returns>
-        public static ChordNode CallFindSuccessor(UInt64 id)
+        public static Node CallFindSuccessor(UInt64 id)
         {
-            return CallFindSuccessor(ChordServer.LocalNode, id);
+            return CallFindSuccessor(Server.LocalNode, id);
         }
 
         /// <summary>
@@ -185,17 +132,16 @@ namespace DCacheLib
         /// <param name="hopCountIn">The known hopcount prior to calling FindSuccessor on this node.</param>
         /// <param name="hopCountOut">The total hopcount of this operation (either returned upwards, or reported for hopcount efficiency validation).</param>
         /// <returns>The Successor of ID, or NULL in case of error.</returns>
-        public static ChordNode CallFindSuccessor(ChordNode remoteNode, UInt64 id, int retryCount, int hopCountIn, out int hopCountOut)
+        public static Node CallFindSuccessor(Node remoteNode, UInt64 id, int retryCount, int hopCountIn, out int hopCountOut)
         {
-            ChordInstance instance = ChordServer.GetInstance(remoteNode);
 
             try
             {
-                return instance.FindSuccessor(id, hopCountIn, out hopCountOut);
+                return remoteNode.FindSuccessor(id, hopCountIn, out hopCountOut);
             }
             catch (Exception ex)
             {
-                ChordServer.Log(LogLevel.Debug, "Remote Invoker", "CallFindSuccessor error: {0}", ex.Message);
+                //Server.Log(LogLevel.Debug, "Remote Invoker", "CallFindSuccessor error: {0}", ex.Message);
 
                 if (retryCount > 0)
                 {
@@ -209,61 +155,14 @@ namespace DCacheLib
             }
         }
 
-        /// <summary>
-        /// Convenience function to get the local Successor Cache from ChordServer.LocalNode.
-        /// </summary>
-        /// <returns>The local node's successorCache, or NULL in case of error.</returns>
-        public static ChordNode[] GetSuccessorCache()
-        {
-            return GetSuccessorCache(ChordServer.LocalNode);
-        }
-
-        /// <summary>
-        /// Gets the remote SuccessorCache property, using a default retry value of three.
-        /// </summary>
-        /// <param name="remoteNode">The remote from which to access the Successor Cache.</param>
-        /// <returns>The remote node's successorCache, or NULL in case of error.</returns>
-        public static ChordNode[] GetSuccessorCache(ChordNode remoteNode)
-        {
-            return GetSuccessorCache(remoteNode, MaxRetries);
-        }
-
-        /// <summary>
-        /// Gets the remote SuccessorCache property, given a custom retry count.
-        /// </summary>
-        /// <param name="remoteNode">The remote node from which to access the property.</param>
-        /// <param name="retryCount">The number of times to retry the operation in case of error.</param>
-        /// <returns>The remote successorCache, or NULL in case of error.</returns>
-        public static ChordNode[] GetSuccessorCache(ChordNode remoteNode, int retryCount)
-        {
-            ChordInstance instance = ChordServer.GetInstance(remoteNode);
-
-            try
-            {
-                return instance.SuccessorCache;
-            }
-            catch (System.Exception ex)
-            {
-                ChordServer.Log(LogLevel.Debug, "Remote Accessor", "GetSuccessorCache error: {0}", ex.Message);
-
-                if (retryCount > 0)
-                {
-                    return GetSuccessorCache(remoteNode, --retryCount);
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
-
+       
         /// <summary>
         /// Convenience function to get the local node's Predecessor.
         /// </summary>
         /// <returns>The Predecessor of ChordServer.LocalNode, or NULL in case of error.</returns>
-        public static ChordNode GetPredecessor()
+        public static Node GetPredecessor()
         {
-            return GetPredecessor(ChordServer.LocalNode);
+            return GetPredecessor(Server.LocalNode);
         }
 
         /// <summary>
@@ -271,7 +170,7 @@ namespace DCacheLib
         /// </summary>
         /// <param name="remoteNode">The remote from which to access the property.</param>
         /// <returns>The remote node's predecessor, or NULL in case of error.</returns>
-        public static ChordNode GetPredecessor(ChordNode remoteNode)
+        public static Node GetPredecessor(Node remoteNode)
         {
             return GetPredecessor(remoteNode, MaxRetries);
         }
@@ -282,17 +181,15 @@ namespace DCacheLib
         /// <param name="remoteNode">The remote node from which to access the property.</param>
         /// <param name="retryCount">The number of times to retry the operation in case of error.</param>
         /// <returns>The remote predecessor, or NULL in case of error.</returns>
-        public static ChordNode GetPredecessor(ChordNode remoteNode, int retryCount)
+        public static Node GetPredecessor(Node remoteNode, int retryCount)
         {
-            ChordInstance instance = ChordServer.GetInstance(remoteNode);
-
             try
             {
-                return instance.Predecessor;
+                return remoteNode.GetPredecessor();
             }
             catch (System.Exception ex)
             {
-                ChordServer.Log(LogLevel.Debug, "Remote Accessor", "GetPredecessor error: {0}", ex.Message);
+                //Server.Log(LogLevel.Debug, "Remote Accessor", "GetPredecessor error: {0}", ex.Message);
 
                 if (retryCount > 0)
                 {
@@ -309,9 +206,9 @@ namespace DCacheLib
         /// Convenience function to retrieve the local node's Successor property.
         /// </summary>
         /// <returns>The local node's successor, or NULL in case of error.</returns>
-        public static ChordNode GetSuccessor()
+        public static Node GetSuccessor()
         {
-            return GetSuccessor(ChordServer.LocalNode);
+            return GetSuccessor(Server.LocalNode);
         }
 
         /// <summary>
@@ -319,7 +216,7 @@ namespace DCacheLib
         /// </summary>
         /// <param name="remoteNode">The remote from which to access the property.</param>
         /// <returns>The remote node's successor, or NULL in case of error.</returns>
-        public static ChordNode GetSuccessor(ChordNode remoteNode)
+        public static Node GetSuccessor(Node remoteNode)
         {
             return GetSuccessor(remoteNode, MaxRetries);
         }
@@ -330,17 +227,15 @@ namespace DCacheLib
         /// <param name="remoteNode">The remote node from which to access the property.</param>
         /// <param name="retryCount">The number of times to retry the operation in case of error.</param>
         /// <returns>The remote successor, or NULL in case of error.</returns>
-        public static ChordNode GetSuccessor(ChordNode remoteNode, int retryCount)
+        public static Node GetSuccessor(Node remoteNode, int retryCount)
         {
-            ChordInstance instance = ChordServer.GetInstance(remoteNode);
-
             try
             {
-                return instance.Successor;
+                return remoteNode.GetSuccessor();
             }
             catch (System.Exception ex)
             {
-                ChordServer.Log(LogLevel.Debug, "Remote Accessor", "GetSuccessor error: {0}", ex.Message);
+                //Server.Log(LogLevel.Debug, "Remote Accessor", "GetSuccessor error: {0}", ex.Message);
 
                 if (retryCount > 0)
                 {
@@ -358,7 +253,7 @@ namespace DCacheLib
         /// </summary>
         /// <param name="instance">The ChordInstance to validity-check.</param>
         /// <returns>TRUE if valid; FALSE otherwise.</returns>
-        public static bool IsInstanceValid(ChordInstance instance)
+        public static bool IsInstanceValid(Instance instance)
         {
             try
             {
@@ -373,7 +268,7 @@ namespace DCacheLib
             }
             catch (Exception e)
             {
-                Log(LogLevel.Debug, "Incoming instance was not valid: ({0}).", e.ToString());  // TODO; better logging
+                //Log(LogLevel.Debug, "Incoming instance was not valid: ({0}).", e.ToString());  // TODO; better logging
                 return false;
             }
         }
@@ -419,28 +314,14 @@ namespace DCacheLib
             return false;
         }
 
-        /// <summary>
-        /// Range checks to determine if key fits in the range.  In this particular case, if the start==end of the range,
-        /// we consider key to be in that range.  Handles wraparound.
-        /// </summary>
-        /// <param name="key">the key to range check</param>
-        /// <param name="start">lower bound of the range</param>
-        /// <param name="end">upper bound of the range</param>
-        /// <returns>true if in the range; false if key is not in the range</returns>
         public static bool FingerInRange(UInt64 key, UInt64 start, UInt64 end)
         {
-            // in this case, we are the successor of the predecessor we're looking for
-            // so we return true which will mean return the farthest finger from FindClosestPrecedingFinger
-            // ... this way, we can go as far around the circle as we know how to in order to find the
-            // predecessor
             if (start == end)
             {
                 return true;
             }
             else if (start > end)
             {
-                // this handles the wraparound case - since the range includes zero, any key bigger than the start
-                // or smaller than the end will be considered in the range
                 if (key > start || key < end)
                 {
                     return true;
@@ -448,8 +329,6 @@ namespace DCacheLib
             }
             else
             {
-                // this is the normal case - in this case, the start is the lower bound and the end is the upper bound
-                // so if key falls between them, we're good
                 if (key > start && key < end)
                 {
                     return true;
@@ -461,87 +340,21 @@ namespace DCacheLib
 
         #endregion
 
-        #region Remoting Service Plumbing
-
-        static TcpChannel s_ChordTcpChannel = null;
-        /// <summary>
-        /// Safely register the TcpChannel for this service.
-        /// </summary>
-        /// <param name="port">The port on which the service will listen.</param>
-        /// <returns>true if registration succeeded; false, otherwise.</returns>
-        public static bool RegisterService(int port)
-        {
-            try
-            {
-                if (s_ChordTcpChannel != null)
-                {
-                    ChordServer.UnregisterService();
-                }
-
-                BinaryServerFormatterSinkProvider provider = new BinaryServerFormatterSinkProvider();
-                provider.TypeFilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full;
-
-                IDictionary props = new Hashtable();
-                props["port"] = port;
-
-                s_ChordTcpChannel = new TcpChannel(props, null, provider);
-
-                ChannelServices.RegisterChannel(s_ChordTcpChannel, false);
-                RemotingConfiguration.RegisterWellKnownServiceType(typeof(ChordInstance), "chord", WellKnownObjectMode.Singleton);
-            }
-            catch (Exception e)
-            {
-                ChordServer.Log(LogLevel.Error, "Configuration", "Unable to register Chord Service ({0}).", e.Message);
-                return false;
-            }
-
-            ChordServer.Log(LogLevel.Info, "Configuration", "Chord Service registered on port {0}.", port);
-
-            return true;
-        }
 
         /// <summary>
-        /// Safely unregister the TcpChannel for this service.
+        /// Gets the 64-bit truncated MD5 hash value of a given string key.
         /// </summary>
-        public static void UnregisterService()
+        /// <param name="key">The key to hash.</param>
+        /// <returns>A ulong-truncated MD5 hash digest of the string key.</returns>
+        public static UInt64 GetHash(string key)
         {
-            if (s_ChordTcpChannel != null)
-            {
-                ChannelServices.UnregisterChannel(s_ChordTcpChannel);
-                s_ChordTcpChannel = null;
-            }
+            MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
+            byte[] bytes = Encoding.ASCII.GetBytes(key);
+            bytes = md5.ComputeHash(bytes);
+            return BitConverter.ToUInt64(bytes, 0);
         }
-
-        #endregion
-
-        #region Logging
-
-        /// <summary>
-        /// Log a message to the Chord logging facility.
-        /// </summary>
-        /// <param name="logLevel">The log level.</param>
-        /// <param name="logArea">The functional source area of the log message.</param>
-        /// <param name="message">The message to log.</param>
-        public static void Log(LogLevel logLevel, string logArea, string message, params object[] parameters)
-        {
-            //TODO: implement proper logging
-            if (logLevel != LogLevel.Debug)
-            {
-                Console.WriteLine("{0} {1} > : {2}", DateTime.Now, ChordServer.LocalNode, string.Format(message, parameters));
-            }
-        }
-
-        #endregion
     }
 
-    /// <summary>
-    /// The logging level to use for a given message / log.
-    /// </summary>
-    public enum LogLevel
-    {
-        Error,
-        Info,
-        Warn,
-        Debug
-    }
+    
+
 }

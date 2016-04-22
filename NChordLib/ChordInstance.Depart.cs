@@ -33,7 +33,7 @@
 
 using System;
 
-namespace NChordLib
+namespace DCacheLib
 {
     public partial class ChordInstance : MarshalByRefObject
     {

@@ -1,5 +1,6 @@
-using NChordLib;
+using DCacheLib;
 using System;
+using System.Collections.Generic;
 
 namespace DCacheServer
 {
@@ -15,11 +16,11 @@ namespace DCacheServer
                 int seedPort = args.Length >= 2 ? Convert.ToInt32(args[1]) : -1;
                 string seedHost = args.Length >= 3 ? Convert.ToString(args[2]) : "127.0.0.1";
 
-                ChordInstance instance = dconsole.Join(portNum, seedPort, seedHost);
+                List<Instance> cluster = dconsole.Join(portNum, 10);
                 
-                if (instance != null)
+                if (cluster != null && cluster.Count > 0)
                 {
-                    while (dconsole.CheckConsole(instance)) ;
+                    while (dconsole.CheckConsole(cluster)) ;
                 }
             }
             catch (Exception ex)

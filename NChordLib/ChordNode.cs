@@ -40,7 +40,7 @@
 
 using System;
 
-namespace NChordLib
+namespace DCacheLib
 {
     /// <summary>
     /// ChordNode is an object used to identify a potential node in a Chord ring given a hostname and a port.

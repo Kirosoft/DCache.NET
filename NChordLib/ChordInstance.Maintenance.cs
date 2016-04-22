@@ -37,7 +37,7 @@ using System;
 using System.Threading;
 using System.ComponentModel;
 
-namespace NChordLib
+namespace DCacheLib
 {
     public partial class ChordInstance : MarshalByRefObject
     {

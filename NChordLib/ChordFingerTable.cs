@@ -35,7 +35,7 @@
 
 using System;
 
-namespace NChordLib
+namespace DCacheLib
 {
     /// <summary>
     /// The ChordFingerTable is used as a navigation shortcut.  One instance of ChordFingerTable is

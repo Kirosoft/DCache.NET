@@ -37,7 +37,7 @@ using System;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace NChordLib
+namespace DCacheLib
 {
     public static partial class ChordServer
     {

@@ -97,9 +97,13 @@ namespace DCacheLib
             // from the asynchronous state object.
             StateObject state = (StateObject)ar.AsyncState;
             Socket handler = state.workSocket;
-
+            SocketError errorCode;
             // Read data from the client socket. 
-            int bytesRead = handler.EndReceive(ar);
+            int bytesRead = handler.EndReceive(ar, out errorCode);
+            if (errorCode != SocketError.Success)
+            {
+                bytesRead = 0;
+            }
 
             if (bytesRead > 0)
             {

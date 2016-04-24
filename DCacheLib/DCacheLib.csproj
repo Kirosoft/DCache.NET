@@ -62,7 +62,6 @@
     <Compile Include="FingerTable.cs" />
     <Compile Include="Instance.cs" />
     <Compile Include="Instance.Depart.cs" />
-    <Compile Include="Instance.Join.cs" />
     <Compile Include="Instance.Maintenance.cs" />
     <Compile Include="Instance.Maintenance.StabilizePredecessors.cs" />
     <Compile Include="Instance.Maintenance.StabilizeSuccessors.cs" />

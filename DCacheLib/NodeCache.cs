@@ -36,5 +36,17 @@ namespace DCacheLib
 
             return result;
         }
+        public bool DeleteNode(UInt64 id)
+        {
+            Node value = null;
+            bool result = false;
+
+            result =  this.TryRemove(id, out value);
+            if (result)
+            {
+                value.Close();
+            }
+            return result;
+        }
     }
 }

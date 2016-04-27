@@ -63,20 +63,42 @@ namespace DCacheLib
 
         public virtual bool Send(string data)
         {
-            int res = 0;
+            bool res = false;
 
             if (SocketRef != null)
             {
-                res = SocketRef.Send(Encoding.UTF8.GetBytes(data + "<EOF>"));
-                //Console.WriteLine($"Sending: {data}");
-                if (res == 0)
+                byte[] buffer = Encoding.UTF8.GetBytes(data + "<EOF>");
+                SocketAsyncEventArgs e = new SocketAsyncEventArgs();
+                e.SetBuffer(buffer, 0, buffer.Length);
+                e.Completed += new EventHandler<SocketAsyncEventArgs>(SendCallback);
+
+                try
                 {
-                    Console.WriteLine("ERRROR********");
+                    res = SocketRef.SendAsync(e);
+                }
+                catch (Exception ee)
+                {
+                    Console.WriteLine($"Socket send rror {ee.Message}");
                 }
             }
-            return res > 0;
+            return res;
         }
 
+        private void SendCallback(object sender, SocketAsyncEventArgs e)
+        {
+            if (e.SocketError == SocketError.Success && e.Count != 0)
+            {
+                // You may need to specify some type of state and 
+                // pass it into the BeginSend method so you don't start
+                // sending from scratch
+            }
+            else
+            {
+                Console.WriteLine("Socket Error: {0} when sending to {1}",
+                       e.SocketError,
+                       ID);
+            }
+        }
         public override string ToString()
         {
             return $"{this.Host}:{this.PortNumber.ToString()} ({this.ID.ToString("x10").ToUpper()})";
@@ -129,6 +151,19 @@ namespace DCacheLib
                 string payload = Message.Split('=')[1];
 
                 commandListener?.Invoke(command, payload);
+            }
+        }
+
+        public void Close()
+        {
+            try
+            {
+                udpClient?.Close();
+                SocketRef?.Close();
+            }
+            catch (Exception ee)
+            {
+                Console.WriteLine($"Node::Close - Error during cleanup ({ee.Message}).");
             }
         }
 

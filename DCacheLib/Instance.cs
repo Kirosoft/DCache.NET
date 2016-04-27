@@ -39,14 +39,18 @@ namespace DCacheLib
                         // just added to the cache
                         break;
                     }
+                case API.PING:
+                    {
+                        // just added to the cache
+                        Console.Write($"*");
+                        break;
+                    }
                 case API.FIND_SUCCESSOR:
                     {
                         if (IsIDInRange(sourceNodeId))
                         {
-                            if (sourceNode != Successor)
-                            {
-                                Successor = sourceNode;
-                            }
+                            // THe property will fire an event
+                            Successor = sourceNode;
                         }
                         break;
                     }
@@ -64,19 +68,13 @@ namespace DCacheLib
                 case API.GET_SUCCESSOR_RESPONSE:
                     {
                         // A node has responded and believes it is the successor
-                        if (sourceNode != Successor)
-                        {
-                            Successor = sourceNode;
-                        }
+                        Successor = sourceNode;
                         break;
                     }
                 case API.GET_PREDECESSOR_RESPONSE:
                     {
                         // A node has responded and believes it is the predecessor
-                        if (sourceNode != Predecessor)
-                        {
-                            Predecessor = sourceNode;
-                        }
+                        Predecessor = sourceNode;
                         break;
                     }
                 default:

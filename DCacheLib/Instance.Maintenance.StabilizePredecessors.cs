@@ -1,12 +1,3 @@
-/*
- * ChordInstance.Maintenance.StabilizePredecessors.cs:
- * 
- *  Maintenance task to stabilize the local node's predecessor as specified by the Chord paper.
- * 
- *  This task runs every 5 seconds though that value can be tweaked as needed.
- *
- */
-
 using System;
 using System.ComponentModel;
 using System.Configuration;
@@ -16,11 +7,6 @@ namespace DCacheLib
 {
     public partial class Instance
     {
-        /// <summary>
-        /// Maintenance task to stabilize the local node's predecessor as per the Chord paper.
-        /// </summary>
-        /// <param name="sender">The backgroundworker thread that this task is running on.</param>
-        /// <param name="ea">Args (ignored)</param>
         private void StabilizePredecessors(object sender, DoWorkEventArgs ea)
         {
             BackgroundWorker me = (BackgroundWorker)sender;
@@ -29,11 +15,22 @@ namespace DCacheLib
             {
                 try
                 {
+                    if (Predecessor != null)
+                    {
+                        bool res = Predecessor.Send($"{API.PING}={{'source_node_id':'{ID}','source_port':'{Convert.ToInt32(LocalNode.PortNumber)}','source_host':'{LocalNode.Host}'}}");
+                        if (!res)
+                        {
+                            NodeCache nc = NodeCache.Instance;
+                            nc.DeleteNode(Predecessor.ID);
+                            Predecessor.Close();
+                            Predecessor = null;
+                        }
+                    }
                     LocalNode.MulticastSend($"{API.FIND_PREDECCESSOR}={{'source_node_id':'{ID}','source_port':'{Convert.ToInt32(LocalNode.PortNumber)}','source_host':'{LocalNode.Host}'}}");
                 }
                 catch (Exception e)
                 {
-                    //Server.Log(LogLevel.Error, "StabilizePredecessors", $"StabilizePredecessors error: {e.Message}" );
+                    Log("StabilizePredecessors", $"StabilizePredecessors error: {e.Message}", LogLevel.Error  );
                     this.Predecessor = null;
                 }
 

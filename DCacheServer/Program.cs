@@ -16,7 +16,7 @@ namespace DCacheServer
                 int seedPort = args.Length >= 2 ? Convert.ToInt32(args[1]) : -1;
                 string seedHost = args.Length >= 3 ? Convert.ToString(args[2]) : "127.0.0.1";
 
-                List<Instance> cluster = dconsole.Join(portNum, 10);
+                List<Instance> cluster = dconsole.Join(portNum, 1);
                 
                 if (cluster != null && cluster.Count > 0)
                 {

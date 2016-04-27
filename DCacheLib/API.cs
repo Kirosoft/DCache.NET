@@ -6,6 +6,7 @@ namespace DCacheLib
         public const string LOCAL_HOST = "LOCALHOST";
 
         public const string NOTIFY = "NOTIFY";
+        public const string PING = "PING";
         public const string FIND_SUCCESSOR = "FIND_SUCCESSOR";
         public const string FIND_PREDECCESSOR = "FIND_PREDECCESSOR";
 

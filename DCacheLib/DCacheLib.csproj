@@ -65,7 +65,6 @@
     <Compile Include="Instance.Maintenance.cs" />
     <Compile Include="Instance.Maintenance.StabilizePredecessors.cs" />
     <Compile Include="Instance.Maintenance.StabilizeSuccessors.cs" />
-    <Compile Include="Instance.Maintenance.UpdateFingerTable.cs" />
     <Compile Include="Instance.Properties.cs" />
     <Compile Include="Node\Node.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

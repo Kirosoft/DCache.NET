@@ -10,6 +10,8 @@ namespace DCacheLib
 
             try
             {
+                departing = true;
+
                 //this.Successor.NotifyNewPredecessor(this.Predecessor);
                 //this.Predecessor.NotifyNewSuccessor(this.Successor);
             }

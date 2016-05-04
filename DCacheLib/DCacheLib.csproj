@@ -52,11 +52,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API.cs" />
+    <Compile Include="Cluster\ClusterHelper.cs" />
     <Compile Include="LocationService.cs" />
     <Compile Include="NodeCache.cs" />
     <Compile Include="Node\ClientNode.cs" />
     <Compile Include="Node\INode.cs" />
     <Compile Include="Node\ServerNode.cs" />
+    <Compile Include="Services\IService.cs" />
+    <Compile Include="Services\MapService.cs" />
     <Compile Include="SocketUtils\AsynchronousSocketClient.cs" />
     <Compile Include="SocketUtils\AsynchronousSocketListener.cs" />
     <Compile Include="FingerTable.cs" />

@@ -1,5 +1,7 @@
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Concurrent;
+using DCacheLib.Services;
 
 namespace DCacheLib
 {
@@ -8,6 +10,7 @@ namespace DCacheLib
     // key k is assigned to the first node with id >= k (successor node)
     public partial class Instance 
     {
+        private ConcurrentDictionary<string, IService> services = new ConcurrentDictionary<string, IService>();
 
         public Instance(INode hostNode)
         {
@@ -18,6 +21,12 @@ namespace DCacheLib
             Log("Instance", $"Starting new node on port {LocalNode.PortNumber}.");
 
             StartMaintenance();
+
+            services.TryAdd("firstMap", new MapService());
+
+            services["firstMap"].put("mykey", "test value!");
+
+            Console.WriteLine($"My key: {services["firstMap"].get("mykey")}");
         }
 
         public string CommandProcessor(string command, string value)

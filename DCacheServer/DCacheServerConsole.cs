@@ -2,6 +2,7 @@
 using DCacheLib;
 using System.Collections.Generic;
 using System.Linq;
+using DCacheLib.Cluster;
 
 namespace DCacheServer
 {
@@ -9,13 +10,11 @@ namespace DCacheServer
     {
         public List<Instance> Join(int portNum = 5000, int clusterSize = 1)
         {
-            List<Instance> cluster = new List<Instance>();
+            ClusterHelper clusterHelper = ClusterHelper.Instance;
+
+            List<Instance> cluster = clusterHelper.CreateLocalCluster(clusterSize);
+
             LocationService locationService = new LocationService();
-            for (int f = 0; f < clusterSize; f++)
-            {
-                Instance server = new Instance(new ServerNode(locationService.GetNextAvailablePort()));
-                cluster.Add(server);
-            }
             List<int> clusterList = locationService.GetConnectedPorts();
             Console.WriteLine("LocationServices: "+String.Join(",", clusterList.Select(x => x.ToString()).ToArray()));
 

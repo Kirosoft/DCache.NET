@@ -1,6 +1,7 @@
 using System;
 using System.Configuration;
 using System.Timers;
+using System.Collections.Concurrent;
 
 namespace DCacheLib
 {
@@ -13,6 +14,7 @@ namespace DCacheLib
         public bool departing = false;
         private DataTimer predecessorTimer = null;
         private DataTimer successorTimer = null;
+        private ConcurrentDictionary<string, object> keyStore = new ConcurrentDictionary<string, object>();
 
         public Node Successor 
         {

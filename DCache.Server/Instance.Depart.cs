@@ -24,7 +24,6 @@ namespace DCache
                 // set this node out of the ring
                 this.Successor = LocalNode;
                 this.Predecessor = LocalNode;
-                this.FingerTable = new FingerTable(LocalNode);
             }
         }
     }

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
+using DCache.Cluster;
+using DCache.Command;
 
 namespace DCache
 {
@@ -16,22 +18,23 @@ namespace DCache
         private ConcurrentDictionary<string, object> keyStore = new ConcurrentDictionary<string, object>();
         private ConcurrentDictionary<string, object> backupKeyStore = new ConcurrentDictionary<string, object>();
         public delegate void NewSuccessor(UInt64? successorID);
-        public NewSuccessor successorEventListener = null; 
+        public NewSuccessor successorEventListener = null;
+        private Node m_Successor = null;
 
         public Node Successor 
         {
             get 
             { 
-                return FingerTable[0]; 
+                return m_Successor; 
             }
             set
             {
                 StartSuccessorPropertyTimer();
 
-                if (value == null && value != FingerTable[0])
+                if (value == null && value != m_Successor)
                 {
                     Log("Navigation", "Setting successor to null.");
-                    FingerTable[0] = value;
+                    m_Successor = value;
                     if (successorTimer != null)
                     {
                         successorTimer.Change(-1, -1);
@@ -42,13 +45,13 @@ namespace DCache
                     successorEventListener?.Invoke(null);
                 }
                 else if (value != null && 
-                    (FingerTable[0] == null || FingerTable[0].ID != value.ID))
+                    (m_Successor == null || m_Successor.ID != value.ID))
                 {
                     Log("SetSuccessor", $"New Successor {value}.");
 
                     // Tell the new successor we are now their predecessor
                     value.SendAsync($"[{API.GET_PREDECESSOR_RESPONSE}={{'source_node_id':'{ID}','source_port':'{Convert.ToInt32(LocalNode.PortNumber)}','source_host':'{LocalNode.Host}'}}]");
-                    FingerTable[0] = value;
+                    m_Successor = value;
                     // Broadcast the event
                     successorEventListener?.Invoke(value.ID);
                 }
@@ -138,7 +141,5 @@ namespace DCache
                 //instance.Predecessor = null;
             }
         }
-
-        public FingerTable FingerTable { get; set;  }
     }
 }

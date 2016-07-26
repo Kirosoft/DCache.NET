@@ -109,6 +109,7 @@ namespace DCache
                 catch (Exception ee)
                 {
                     Console.WriteLine($"Socket send async error {ee.Message}");
+                    System.Threading.Tasks.Task.Delay(3000).Wait();
                 }
             }
             return true;
@@ -163,11 +164,11 @@ namespace DCache
             {
                 Console.WriteLine(ee.Message);
             }
-            receiveThread = new Thread(Receive);
+            receiveThread = new Thread(MulticastReceive);
             receiveThread.Start();
         }
 
-        public async void Receive()
+        public async void MulticastReceive()
         {
             while (true)
             {

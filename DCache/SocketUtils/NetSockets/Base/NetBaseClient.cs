@@ -77,7 +77,7 @@ namespace NetSockets
             RemotePort = port;
 
             tcp = new TcpClient();
-            tcp.ConnectAsync(host, port);
+            tcp.ConnectAsync(host, port).Wait();
 
             IsConnected = true;
             if (OnConnected != null)

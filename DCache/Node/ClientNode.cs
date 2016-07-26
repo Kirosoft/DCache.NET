@@ -1,5 +1,6 @@
 ﻿using System;
 using NetSockets;
+using DCache.Command;
 
 namespace DCache
 {
@@ -12,13 +13,20 @@ namespace DCache
             Console.WriteLine($"ClientNode- Creating new client for {host}:{portNum}");
             if (SocketRef == null)
             {
-                SocketRef = new NetPayloadClient();
-                bool connected = SocketRef.TryConnect(host, portNum);
+                bool connected = false;
 
-                if (!connected)
+                do
                 {
-                    Console.WriteLine("Unable to connect: " + host + ", port: " + Convert.ToString(portNum));
-                }
+                    SocketRef = new NetPayloadClient();
+                    connected = SocketRef.TryConnect(host, portNum);
+
+                    if (!connected)
+                    {
+                        Console.WriteLine("Unable to connect: " + host + ", port: " + Convert.ToString(portNum));
+                        
+                    }
+
+                } while (!connected);
             }
         }
 

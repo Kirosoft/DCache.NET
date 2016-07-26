@@ -1,6 +1,8 @@
 using System;
 using System.ComponentModel;
 using System.Threading;
+using DCache.Cluster;
+using DCache.Command;
 
 namespace DCache
 {

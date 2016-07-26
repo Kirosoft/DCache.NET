@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using static DCache.Instance;
 
 namespace DCache.Services
 {

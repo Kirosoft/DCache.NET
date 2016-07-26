@@ -6,7 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 
-namespace DCache
+namespace DCache.Cluster
 {
     public class LocationService
     {
@@ -57,12 +57,12 @@ namespace DCache
             } 
             for (int f = 0; f < connectedPorts.Length; f++)
             {
-                if (connectedPorts[f] != basePort+f)
+                if (connectedPorts[f] != basePort + f)
                 {
                     return basePort + f;
                 }
             }
-            return basePort+connectedPorts.Length;
+            return basePort + connectedPorts.Length;
         }
 
         // Gets any other cluster node (we can exclude ourselves)

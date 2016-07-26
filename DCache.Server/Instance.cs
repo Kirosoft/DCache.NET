@@ -3,6 +3,7 @@ using System;
 using DCache.Services;
 using DCache.Command;
 using DCache.Utils;
+using DCache.Cluster;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 
@@ -32,7 +33,6 @@ namespace DCache
         {
             LocalNode = (ServerNode)hostNode;
             LocalNode.commandListener += CommandProcessor;
-            FingerTable = new FingerTable((ServerNode)hostNode);
 
             config = new ConfigurationBuilder()
                     .SetBasePath(Directory.GetCurrentDirectory())

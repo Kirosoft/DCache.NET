@@ -3,6 +3,7 @@ using DCache.Command;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Text;
+using DCache.Cluster;
 
 namespace DCache.Client
 {

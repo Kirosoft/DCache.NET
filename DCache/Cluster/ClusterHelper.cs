@@ -18,18 +18,18 @@ namespace DCache.Cluster
             }
         }
 
-        public List<Instance> CreateLocalCluster(int clusterSize)
-        {
-            List<Instance> cluster = new List<Instance>();
-            LocationService locationService = new LocationService();
+        //public List<Instance> CreateLocalCluster(int clusterSize)
+        //{
+        //    List<Instance> cluster = new List<Instance>();
+        //    LocationService locationService = new LocationService();
 
-            for (int f = 0; f < clusterSize; f++)
-            {
-                Instance server = new Instance(new ServerNode(locationService.GetNextAvailablePort()));
-                cluster.Add(server);
-            }
+        //    for (int f = 0; f < clusterSize; f++)
+        //    {
+        //        Instance server = new Instance(new ServerNode(locationService.GetNextAvailablePort()));
+        //        cluster.Add(server);
+        //    }
 
-            return cluster;
-        }
+        //    return cluster;
+        //}
     }
 }

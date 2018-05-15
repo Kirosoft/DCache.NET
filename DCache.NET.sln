@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2000
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FF3E4610-D7CC-4263-8A44-838FEDA046FB}"
 	ProjectSection(SolutionItems) = preProject
@@ -9,11 +9,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DCache", "DCache\DCache.xproj", "{47022F95-05B2-4B7D-AA65-17C6F336C672}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DCacheCore", "DCacheCore\DCacheCore.csproj", "{49FB4AF0-5673-48B3-9339-B4FC40536A4F}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DCache.Server", "DCache.Server\DCache.Server.xproj", "{C8733D1B-7E9D-4333-B0AA-2D7AAA9D50EE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DCacheServer", "DCacheServer\DCacheServer.csproj", "{51C069AF-A764-4466-B95A-C7109FAF71A1}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DCache.Client", "DCache.Client\DCache.Client.xproj", "{BD4832B6-A8F4-4617-9D46-FA428A709CF4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DCacheClient", "DCacheClient\DCacheClient.csproj", "{BFF39675-EAE2-4493-A3C2-92E596A295FB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,20 +21,23 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{47022F95-05B2-4B7D-AA65-17C6F336C672}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{47022F95-05B2-4B7D-AA65-17C6F336C672}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{47022F95-05B2-4B7D-AA65-17C6F336C672}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{47022F95-05B2-4B7D-AA65-17C6F336C672}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C8733D1B-7E9D-4333-B0AA-2D7AAA9D50EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C8733D1B-7E9D-4333-B0AA-2D7AAA9D50EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C8733D1B-7E9D-4333-B0AA-2D7AAA9D50EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C8733D1B-7E9D-4333-B0AA-2D7AAA9D50EE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BD4832B6-A8F4-4617-9D46-FA428A709CF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BD4832B6-A8F4-4617-9D46-FA428A709CF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BD4832B6-A8F4-4617-9D46-FA428A709CF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BD4832B6-A8F4-4617-9D46-FA428A709CF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49FB4AF0-5673-48B3-9339-B4FC40536A4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49FB4AF0-5673-48B3-9339-B4FC40536A4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49FB4AF0-5673-48B3-9339-B4FC40536A4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49FB4AF0-5673-48B3-9339-B4FC40536A4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51C069AF-A764-4466-B95A-C7109FAF71A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51C069AF-A764-4466-B95A-C7109FAF71A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51C069AF-A764-4466-B95A-C7109FAF71A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51C069AF-A764-4466-B95A-C7109FAF71A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFF39675-EAE2-4493-A3C2-92E596A295FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFF39675-EAE2-4493-A3C2-92E596A295FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFF39675-EAE2-4493-A3C2-92E596A295FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFF39675-EAE2-4493-A3C2-92E596A295FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C47BEFB0-5974-4456-B0DD-EB2FA93516A7}
 	EndGlobalSection
 EndGlobal

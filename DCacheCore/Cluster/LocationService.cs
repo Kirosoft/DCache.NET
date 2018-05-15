@@ -28,6 +28,7 @@ namespace DCache.Cluster
         public LocationService()
         {
             config = new ConfigurationBuilder()
+                    
                     .SetBasePath(Directory.GetCurrentDirectory())
                     .AddJsonFile("appsettings.json")
                     .Build();
@@ -50,7 +51,7 @@ namespace DCache.Cluster
         {
             int basePort = Convert.ToInt32(config["settings:BasePort"]);
 
-            int[] connectedPorts = GetConnectedPorts().ToArray<int>();
+            int[] connectedPorts = GetConnectedPorts().Where(p => p < 5030).ToArray<int>();
             if (connectedPorts.Length == 0)
             {
                 return basePort;

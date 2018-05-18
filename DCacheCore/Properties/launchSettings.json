@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DCacheCore": {
+      "commandName": "Project",
+      "commandLineArgs": "5000"
+    }
+  }
+}

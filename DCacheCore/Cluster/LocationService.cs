@@ -51,7 +51,7 @@ namespace DCache.Cluster
         {
             int basePort = Convert.ToInt32(config["settings:BasePort"]);
 
-            int[] connectedPorts = GetConnectedPorts().Where(p => p < 5030).ToArray<int>();
+            int[] connectedPorts = GetConnectedPorts().ToArray<int>();
             if (connectedPorts.Length == 0)
             {
                 return basePort;

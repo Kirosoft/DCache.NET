@@ -18,8 +18,11 @@ namespace DCache
         private ConcurrentDictionary<string, object> keyStore = new ConcurrentDictionary<string, object>();
         private ConcurrentDictionary<string, object> backupKeyStore = new ConcurrentDictionary<string, object>();
         public delegate void NewSuccessor(UInt64? successorID);
+        public delegate void NewPredecessor(UInt64? predecessorID);
         public NewSuccessor successorEventListener = null;
+        public NewPredecessor predecessorEventListener = null;
         private Node m_Successor = null;
+        private Node m_Predecessor = null;
 
         public Node Successor 
         {
@@ -29,11 +32,10 @@ namespace DCache
             }
             set
             {
-                StartSuccessorPropertyTimer();
 
-                if (value == null && value != m_Successor)
+                if (value == null)
                 {
-                    Log("Navigation", "Setting successor to null.");
+                    Log("SetSuccessor", "Setting successor to null.");
                     m_Successor = value;
                     if (successorTimer != null)
                     {
@@ -44,8 +46,7 @@ namespace DCache
                     // Broadcast the event
                     successorEventListener?.Invoke(null);
                 }
-                else if (value != null && 
-                    (m_Successor == null || m_Successor.ID != value.ID))
+                else if (m_Successor == null || m_Successor.ID != value.ID)
                 {
                     Log("SetSuccessor", $"New Successor {value}.");
 
@@ -54,6 +55,18 @@ namespace DCache
                     m_Successor = value;
                     // Broadcast the event
                     successorEventListener?.Invoke(value.ID);
+                    StartSuccessorPropertyTimer();
+                }
+                else if (value.ID == m_Successor.ID)
+                {
+                    //Log("SetSuccessor", "Setting successor to ourselves.");
+                    StartSuccessorPropertyTimer();
+
+                }
+                else
+                {
+                    Log("SetSuccessor", "Unexpected successor event.");
+
                 }
             }
         }
@@ -61,16 +74,16 @@ namespace DCache
         // We expect to receive a ping from the node within a timeout period, otherwise we assume the connection is broken
         private void StartSuccessorPropertyTimer()
         {
-
-            // stop the timer
-            if (successorTimer == null)
+            if (successorTimer != null)
             {
-                int timerPeriod = Convert.ToInt32(config["settings:StabilizePredecessorsPeriod"]) * 3;
-                successorTimer = new Timer(OnSuccessorTimerEvent, this, timerPeriod, timerPeriod);
-                //successorTimer?.Change(-1, -1);
-            }
+                successorTimer.Change(-1, -1);
+                successorTimer.Dispose();
+            } 
 
+            int timerPeriod = Convert.ToInt32(config["settings:StabilizePredecessorsPeriod"]) * 3;
+            successorTimer = new Timer(OnSuccessorTimerEvent, this, timerPeriod, timerPeriod);
         }
+
         private static void OnSuccessorTimerEvent(object state)
         {
             Instance instance = (Instance) state;
@@ -80,13 +93,11 @@ namespace DCache
             {
                 Console.WriteLine($"Successor Node Timeout {instance.Successor.ID}");
 
-                // TODO: put this back in
-                //nc.DeleteNode(instance.Successor.ID);
-                //instance.Successor = null;
+                nc.DeleteNode(instance.Successor.ID);
+                instance.Successor = null;
             }
         }
 
-        private Node m_Predecessor = null;
 
         public Node Predecessor
         {
@@ -96,12 +107,11 @@ namespace DCache
             }
             set
             {
-                StartPredecessorPropertyTimer();
 
-                if (value == null && value != this.m_Predecessor)
+                if (value == null)
                 {
-                    Log("Navigation", "Setting predecessor to null.");
-                    this.m_Predecessor = value;
+                    Log("SetPredeccessor", "Setting predecessor to null.");
+                    this.m_Predecessor = null;
                     if (predecessorTimer != null)
                     {
                         predecessorTimer?.Change(-1, -1);
@@ -109,11 +119,28 @@ namespace DCache
                         predecessorTimer = null;
                     }
                 }
-                else if (value != null && 
-                    (this.m_Predecessor == null || this.m_Predecessor.ID != value.ID)) 
+                else if (this.m_Predecessor == null || this.m_Predecessor.ID != value.ID) 
                 {
                     Log("SetPredeccessor", $"New Predecessor {value}.");
                     this.m_Predecessor = value;
+
+                    // Tell the new successor we are now their predecessor
+                    value.SendAsync($"[{API.GET_SUCCESSOR_RESPONSE}={{'source_node_id':'{ID}','source_port':'{Convert.ToInt32(LocalNode.PortNumber)}','source_host':'{LocalNode.Host}'}}]");
+                    // Broadcast the event
+                    predecessorEventListener?.Invoke(value.ID);
+                    StartPredecessorPropertyTimer();
+
+                }
+                else if (this.m_Predecessor.ID == value.ID)
+                {
+                    //Log("SetPredeccessor", $"Existing Predecessor {value}.");
+                    //this.m_Predecessor = value;
+                    StartPredecessorPropertyTimer();
+                }
+                else
+                {
+                    Log("SetPredecessor", "Unexpected precessor event.");
+
                 }
             }
         }
@@ -123,10 +150,12 @@ namespace DCache
 
             if (predecessorTimer != null)
             {
-                //predecessorTimer?.Change(-1,-1);
-                int timerInterval = Convert.ToInt32(config["settings:StabilizePredecessorsPeriod"]) * 3;
-                predecessorTimer = new Timer(OnPredecessorTimerEvent, this, timerInterval, timerInterval);
+                predecessorTimer?.Change(-1, -1);
+                predecessorTimer.Dispose();
+                predecessorTimer = null;
             }
+            int timerInterval = Convert.ToInt32(config["settings:StabilizePredecessorsPeriod"]) * 3;
+            predecessorTimer = new Timer(OnPredecessorTimerEvent, this, timerInterval, timerInterval);
         }
 
         private static void OnPredecessorTimerEvent(object source)
@@ -137,8 +166,8 @@ namespace DCache
             if (instance.Predecessor != null)
             {
                 Console.WriteLine($"Predecessor Node Timeout {instance.Predecessor.ID}");
-                //nc.DeleteNode(instance.Predecessor.ID);
-                //instance.Predecessor = null;
+                nc.DeleteNode(instance.Predecessor.ID);
+                instance.Predecessor = null;
             }
         }
     }

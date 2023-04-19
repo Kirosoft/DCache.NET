@@ -19,7 +19,12 @@ namespace DCache
             SocketHandler.OnReceived += new NetClientReceivedEventHandler<byte[]>(ProcessCommand);
             StartMulticast();
 
-            MulticastSend($"[{API.NOTIFY}={{'source_node_id':'{ID}','source_port':'{Convert.ToInt32(portNum)}','source_host':'{host}'}}]");
+            try
+            {
+                MulticastSend($"[{API.NOTIFY}={{'source_node_id':'{ID}','source_port':'{Convert.ToInt32(portNum)}','source_host':'{host}'}}]");
+            } catch(Exception ee) {
+            }
+            
         }
 
         void ProcessCommand(object sender, NetClientReceivedEventArgs<byte[]> e)

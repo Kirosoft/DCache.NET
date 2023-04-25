@@ -3,11 +3,14 @@ using System;
 using NetSockets;
 using System.Text;
 using System.Net;
+using System.Security.Cryptography;
 
 namespace DCache
 {
     public class ServerNode: Node
     {
+        private static string password = "secret";
+    
         // TODO: use DI to get this implementation
         private NetPayloadServer SocketHandler { set; get; }
 
@@ -19,7 +22,15 @@ namespace DCache
             SocketHandler.OnReceived += new NetClientReceivedEventHandler<byte[]>(ProcessCommand);
             StartMulticast();
 
-            MulticastSend($"[{API.NOTIFY}={{'source_node_id':'{ID}','source_port':'{Convert.ToInt32(portNum)}','source_host':'{host}'}}]");
+            // create a weak hash .
+            var md5 = MD5.Create();
+            
+            try
+            {
+                MulticastSend($"[{API.NOTIFY}={{'source_node_id':'{ID}','source_port':'{Convert.ToInt32(portNum)}','source_host':'{host}'}}]");
+            } catch(Exception ee) {
+            }
+            
         }
 
         void ProcessCommand(object sender, NetClientReceivedEventArgs<byte[]> e)

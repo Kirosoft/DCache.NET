@@ -22,7 +22,7 @@ namespace DCache
             SocketHandler.OnReceived += new NetClientReceivedEventHandler<byte[]>(ProcessCommand);
             StartMulticast();
 
-            // create a weak hash
+            // create a weak hash .
             var md5 = MD5.Create();
             
             try

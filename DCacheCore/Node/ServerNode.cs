@@ -3,6 +3,7 @@ using System;
 using NetSockets;
 using System.Text;
 using System.Net;
+using System.Security.Cryptography;
 
 namespace DCache
 {
@@ -21,6 +22,8 @@ namespace DCache
             SocketHandler.OnReceived += new NetClientReceivedEventHandler<byte[]>(ProcessCommand);
             StartMulticast();
 
+            var md5 = MD5.Create();
+            
             try
             {
                 MulticastSend($"[{API.NOTIFY}={{'source_node_id':'{ID}','source_port':'{Convert.ToInt32(portNum)}','source_host':'{host}'}}]");

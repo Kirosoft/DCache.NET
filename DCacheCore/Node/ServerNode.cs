@@ -8,6 +8,8 @@ namespace DCache
 {
     public class ServerNode: Node
     {
+        private static string password = "secret";
+    
         // TODO: use DI to get this implementation
         private NetPayloadServer SocketHandler { set; get; }
 
